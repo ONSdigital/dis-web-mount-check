@@ -1,0 +1,7 @@
+FROM onsdigital/dp-concourse-tools-ubuntu-22:ubuntu22.4-jammy-20250126
+
+WORKDIR /app/
+
+COPY dis-web-mount-check .
+
+CMD ./dis-web-mount-check
