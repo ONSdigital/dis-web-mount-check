@@ -1,0 +1,21 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golang
+    tag: 1.24-bullseye
+
+inputs:
+  - name: dis-web-mount-check
+
+outputs:
+  - name: build
+
+caches:
+  - path: go/
+
+run:
+  path: dis-web-mount-check/ci/scripts/build.sh
