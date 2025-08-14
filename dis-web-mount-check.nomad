@@ -30,6 +30,22 @@ job "dis-web-mount-check" {
       value     = "web"
     }
 
+    network {
+      port "http" {}
+    }
+
+    service {
+      name = "dis-web-mount-check"
+      port = "http"
+      tags = ["web"]
+      check {
+        type     = "http"
+        path     = "/health"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+
     restart {
       attempts = 3
       delay    = "15s"
@@ -50,29 +66,11 @@ job "dis-web-mount-check" {
         args = ["./dis-web-mount-check"]
 
         image = "{{ECR_URL}}:concourse-{{REVISION}}"
-
-      }
-
-      service {
-        name = "dis-web-mount-check"
-        port = "http"
-        tags = ["web"]
-
-        check {
-          type     = "http"
-          path     = "/health"
-          interval = "10s"
-          timeout  = "2s"
-        }
       }
 
       resources {
         cpu    = "{{WEB_RESOURCE_CPU}}"
         memory = "{{WEB_RESOURCE_MEM}}"
-
-        network {
-          port "http" {}
-        }
       }
 
       template {
@@ -82,80 +80,6 @@ job "dis-web-mount-check" {
 
       vault {
         policies = ["dis-web-mount-check-web"]
-      }
-    }
-  }
-
-  group "publishing" {
-    count = "{{PUBLISHING_TASK_COUNT}}"
-
-    spread {
-      attribute = "${node.unique.id}"
-      weight    = 100
-      # with `target` omitted, Nomad will spread allocations evenly across all values of the attribute.
-    }
-    spread {
-      attribute = "${attr.platform.aws.placement.availability-zone}"
-      weight    = 100
-      # with `target` omitted, Nomad will spread allocations evenly across all values of the attribute.
-    }
-
-    constraint {
-      attribute = "${node.class}"
-      value     = "publishing"
-    }
-
-    restart {
-      attempts = 3
-      delay    = "15s"
-      interval = "1m"
-      mode     = "delay"
-    }
-
-    task "dis-web-mount-check-publishing" {
-      driver = "docker"
-
-      artifact {
-        source = "s3::https://s3-eu-west-2.amazonaws.com/{{DEPLOYMENT_BUCKET}}/dis-web-mount-check/{{PROFILE}}/{{RELEASE}}.tar.gz"
-      }
-
-      config {
-        command = "${NOMAD_TASK_DIR}/start-task"
-
-        args = ["./dis-web-mount-check"]
-
-        image = "{{ECR_URL}}:concourse-{{REVISION}}"
-      }
-
-      service {
-        name = "dis-web-mount-check"
-        port = "http"
-        tags = ["publishing"]
-
-        check {
-          type     = "http"
-          path     = "/health"
-          interval = "10s"
-          timeout  = "2s"
-        }
-      }
-
-      resources {
-        cpu    = "{{PUBLISHING_RESOURCE_CPU}}"
-        memory = "{{PUBLISHING_RESOURCE_MEM}}"
-
-        network {
-          port "http" {}
-        }
-      }
-
-      template {
-        source      = "${NOMAD_TASK_DIR}/vars-template"
-        destination = "${NOMAD_TASK_DIR}/vars"
-      }
-
-      vault {
-        policies = ["dis-web-mount-check-publishing"]
       }
     }
   }
