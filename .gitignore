@@ -1,4 +1,8 @@
+# Ignore build artifacts
+debug
 /build
+
+coverage.out
 
 # Mac
 .DS_Store

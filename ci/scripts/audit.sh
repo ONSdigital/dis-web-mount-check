@@ -1,5 +1,7 @@
 #!/bin/bash -eux
 
-pushd dis-web-mount-check
+export cwd=$(pwd)
+
+pushd $cwd/dis-web-mount-check
   make audit
 popd
