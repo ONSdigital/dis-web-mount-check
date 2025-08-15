@@ -66,6 +66,8 @@ job "dis-web-mount-check" {
         args = ["./dis-web-mount-check"]
 
         image = "{{ECR_URL}}:concourse-{{REVISION}}"
+
+        ports = ["http"]
       }
 
       resources {
