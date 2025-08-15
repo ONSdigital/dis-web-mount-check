@@ -42,7 +42,7 @@ var (
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
-	log.Namespace = "dis-spread-check"
+	log.Namespace = "dis-web-mount-check"
 
 	cfg, err := config.Get()
 	if err != nil {
