@@ -8,6 +8,7 @@ import (
 
 	"github.com/ONSdigital/dis-web-mount-check/config"
 	"github.com/ONSdigital/dis-web-mount-check/deployment"
+	"github.com/ONSdigital/dis-web-mount-check/slack"
 	"github.com/ONSdigital/log.go/v2/log"
 )
 
@@ -18,12 +19,12 @@ type SlackNotifier interface {
 	Notify(ctx context.Context, cfg *config.Config, result string, state bool)
 }
 
-// RealSlackNotifier implements SlackNotifier using deployment.NotifySlack().
+// RealSlackNotifier implements SlackNotifier using slack.NotifySlack().
 type RealSlackNotifier struct{}
 
-// Notify calls deployment.NotifySlack.
+// Notify calls slack.NotifySlack.
 func (RealSlackNotifier) Notify(ctx context.Context, cfg *config.Config, result string, state bool) {
-	deployment.NotifySlack(ctx, cfg, result, state)
+	slack.NotifySlack(ctx, cfg, result, state)
 }
 
 // DeploymentStateGetter is an interface abstraction for deployment.Deployment.

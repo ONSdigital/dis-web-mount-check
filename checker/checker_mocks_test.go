@@ -5,10 +5,9 @@ package checker
 
 import (
 	"context"
-	"sync"
-
 	"github.com/ONSdigital/dis-web-mount-check/config"
 	"github.com/ONSdigital/dis-web-mount-check/deployment"
+	"sync"
 )
 
 // Ensure, that DeploymentStateGetterMock does implement DeploymentStateGetter.
