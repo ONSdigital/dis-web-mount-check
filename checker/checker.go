@@ -1,6 +1,6 @@
 package checker
 
-//go:generate moq -stub -out mocks_test.go . SlackNotifier DeploymentStateGetter
+//go:generate moq -stub -out checker_mocks_test.go -pkg checker . DeploymentStateGetter SlackNotifier
 
 import (
 	"context"
