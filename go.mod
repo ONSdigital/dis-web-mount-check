@@ -2,6 +2,9 @@ module github.com/ONSdigital/dis-web-mount-check
 
 go 1.24.5
 
+// to fix: [CVE-2025-8959] CWE-59: Improper Link Resolution Before File Access ('Link Following')
+replace github.com/hashicorp/go-getter => github.com/hashicorp/go-getter v1.7.9
+
 require (
 	github.com/ONSdigital/dp-healthcheck v1.6.4
 	github.com/ONSdigital/dp-net/v3 v3.3.0
