@@ -22,12 +22,12 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 
 		// Initialise once so they're never nil
 		mockDep := &mock.DeploymentStateGetterMock{}
-		mockNotifier := &mock.SlackNotifierMock{}
+		mockNotifier := &mock.NotifierMock{}
 		dc := checker.New(cfg, mockDep, mockNotifier)
 
 		convey.Reset(func() { // called after the first Convey() below
 			mockDep := &mock.DeploymentStateGetterMock{}
-			mockNotifier := &mock.SlackNotifierMock{}
+			mockNotifier := &mock.NotifierMock{}
 			dc = checker.New(cfg, mockDep, mockNotifier)
 		})
 
@@ -109,7 +109,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 			callCheck(checker.EffectiveFilterThreshold) // fills the state machine with OK
 
 			// Clear any Slack notifications triggered by the initial OK state
-			mockNotifier := &mock.SlackNotifierMock{}
+			mockNotifier := &mock.NotifierMock{}
 
 			// Step 2: Now simulate DeploymentIncomplete
 			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {

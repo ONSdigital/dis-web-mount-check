@@ -1,6 +1,6 @@
 package checker
 
-//go:generate moq -stub -out mock/checker.go -pkg mock . DeploymentStateGetter SlackNotifier
+//go:generate moq -stub -out mock/checker.go -pkg mock . DeploymentStateGetter Notifier
 
 import (
 	"context"
@@ -8,23 +8,14 @@ import (
 
 	"github.com/ONSdigital/dis-web-mount-check/config"
 	"github.com/ONSdigital/dis-web-mount-check/deployment"
-	"github.com/ONSdigital/dis-web-mount-check/slack"
 	"github.com/ONSdigital/log.go/v2/log"
 )
 
 // ---------- Interfaces & real notifier (for testability) ----------
 
-// SlackNotifier is an interface for sending Slack notifications.
-type SlackNotifier interface {
+// Notifier is an interface for sending Slack notifications.
+type Notifier interface {
 	Notify(ctx context.Context, cfg *config.Config, result string, state bool)
-}
-
-// RealSlackNotifier implements SlackNotifier using slack.NotifySlack().
-type RealSlackNotifier struct{}
-
-// Notify calls slack.NotifySlack.
-func (RealSlackNotifier) Notify(ctx context.Context, cfg *config.Config, result string, state bool) {
-	slack.NotifySlack(ctx, cfg, result, state)
 }
 
 // DeploymentStateGetter is an interface abstraction for deployment.Deployment.
@@ -55,16 +46,16 @@ type BothStates struct {
 const EffectiveFilterThreshold = 3 // number of times new state must be seen in a row to filter out any noise
 
 // DeploymentChecker represents a deployment checker.
-// Modified to use DeploymentStateGetter and SlackNotifier for testability.
+// Modified to use DeploymentStateGetter and Notifier for testability.
 type DeploymentChecker struct {
-	config        *config.Config
-	deployment    DeploymentStateGetter
-	allAppStates  *[]BothStates
-	slackNotifier SlackNotifier
+	config       *config.Config
+	deployment   DeploymentStateGetter
+	allAppStates *[]BothStates
+	notifier     Notifier
 }
 
-// New returns a new checker. Accepts a DeploymentStateGetter and a SlackNotifier to allow injection.
-func New(cfg *config.Config, d DeploymentStateGetter, notifier SlackNotifier) *DeploymentChecker {
+// New returns a new checker. Accepts a DeploymentStateGetter and a Notifier to allow injection.
+func New(cfg *config.Config, d DeploymentStateGetter, notifier Notifier) *DeploymentChecker {
 	allApps := make([]BothStates, len(cfg.AppsToCheck))
 	for i, appName := range cfg.AppsToCheck {
 		allApps[i] = BothStates{
@@ -74,10 +65,10 @@ func New(cfg *config.Config, d DeploymentStateGetter, notifier SlackNotifier) *D
 		}
 	}
 	return &DeploymentChecker{
-		config:        cfg,
-		deployment:    d,
-		allAppStates:  &allApps,
-		slackNotifier: notifier,
+		config:       cfg,
+		deployment:   d,
+		allAppStates: &allApps,
+		notifier:     notifier,
 	}
 }
 
@@ -172,7 +163,7 @@ func (dc *DeploymentChecker) latchAndNotify(ctx context.Context, app *BothStates
 	app.effectiveState = newEffective
 	app.deploymentState = newDeploymentState
 	log.Info(ctx, logMsg, log.Data{"job": app.appName})
-	if dc.config.SlackEnabled && dc.slackNotifier != nil {
-		dc.slackNotifier.Notify(ctx, dc.config, slackMsg, success)
+	if dc.config.SlackEnabled && dc.notifier != nil {
+		dc.notifier.Notify(ctx, dc.config, slackMsg, success)
 	}
 }

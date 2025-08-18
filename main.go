@@ -12,6 +12,7 @@ import (
 	"github.com/ONSdigital/dis-web-mount-check/checker"
 	"github.com/ONSdigital/dis-web-mount-check/config"
 	"github.com/ONSdigital/dis-web-mount-check/deployment"
+	"github.com/ONSdigital/dis-web-mount-check/slack"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	dpnethttp "github.com/ONSdigital/dp-net/v3/http"
 	nomad "github.com/ONSdigital/dp-nomad"
@@ -50,7 +51,7 @@ func main() {
 
 	depl := deployment.New(cfg, nomadClient)
 	// create checker and inject the real Slack notifier
-	chk := checker.New(cfg, depl, checker.RealSlackNotifier{})
+	chk := checker.New(cfg, depl, slack.SlackNotifier{})
 
 	hc, err := startHealthChecks(ctx, cfg, nomadClient)
 	if err != nil {

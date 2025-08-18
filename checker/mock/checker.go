@@ -93,26 +93,26 @@ func (mock *DeploymentStateGetterMock) DeploymentStateCalls() []struct {
 	return calls
 }
 
-// Ensure, that SlackNotifierMock does implement checker.SlackNotifier.
+// Ensure, that NotifierMock does implement checker.Notifier.
 // If this is not the case, regenerate this file with moq.
-var _ checker.SlackNotifier = &SlackNotifierMock{}
+var _ checker.Notifier = &NotifierMock{}
 
-// SlackNotifierMock is a mock implementation of checker.SlackNotifier.
+// NotifierMock is a mock implementation of checker.Notifier.
 //
-//	func TestSomethingThatUsesSlackNotifier(t *testing.T) {
+//	func TestSomethingThatUsesNotifier(t *testing.T) {
 //
-//		// make and configure a mocked checker.SlackNotifier
-//		mockedSlackNotifier := &SlackNotifierMock{
+//		// make and configure a mocked checker.Notifier
+//		mockedNotifier := &NotifierMock{
 //			NotifyFunc: func(ctx context.Context, cfg *config.Config, result string, state bool)  {
 //				panic("mock out the Notify method")
 //			},
 //		}
 //
-//		// use mockedSlackNotifier in code that requires checker.SlackNotifier
+//		// use mockedNotifier in code that requires checker.Notifier
 //		// and then make assertions.
 //
 //	}
-type SlackNotifierMock struct {
+type NotifierMock struct {
 	// NotifyFunc mocks the Notify method.
 	NotifyFunc func(ctx context.Context, cfg *config.Config, result string, state bool)
 
@@ -134,7 +134,7 @@ type SlackNotifierMock struct {
 }
 
 // Notify calls NotifyFunc.
-func (mock *SlackNotifierMock) Notify(ctx context.Context, cfg *config.Config, result string, state bool) {
+func (mock *NotifierMock) Notify(ctx context.Context, cfg *config.Config, result string, state bool) {
 	callInfo := struct {
 		Ctx    context.Context
 		Cfg    *config.Config
@@ -158,8 +158,8 @@ func (mock *SlackNotifierMock) Notify(ctx context.Context, cfg *config.Config, r
 // NotifyCalls gets all the calls that were made to Notify.
 // Check the length with:
 //
-//	len(mockedSlackNotifier.NotifyCalls())
-func (mock *SlackNotifierMock) NotifyCalls() []struct {
+//	len(mockedNotifier.NotifyCalls())
+func (mock *NotifierMock) NotifyCalls() []struct {
 	Ctx    context.Context
 	Cfg    *config.Config
 	Result string
