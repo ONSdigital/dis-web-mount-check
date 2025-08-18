@@ -17,7 +17,7 @@ func NotifySlack(ctx context.Context, cfg *config.Config, result string, state b
 	if state {
 		emoji = cfg.SlackOKEmoji
 	}
-	header := fmt.Sprintf("%s *'web-mount' app spread check (test - ignore):*", emoji)
+	header := fmt.Sprintf("%s *'web-mount' app spread check state:*", emoji)
 
 	text := header + "\n" + result + "\n"
 
