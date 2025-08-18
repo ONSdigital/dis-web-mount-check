@@ -1,6 +1,6 @@
 package checker
 
-//go:generate moq -stub -out checker_mocks_test.go -pkg checker . DeploymentStateGetter SlackNotifier
+//go:generate moq -stub -out mock/checker.go -pkg mock . DeploymentStateGetter SlackNotifier
 
 import (
 	"context"
@@ -83,7 +83,7 @@ func New(cfg *config.Config, d DeploymentStateGetter, notifier SlackNotifier) *D
 
 func (dc *DeploymentChecker) Run(ctx context.Context) {
 	for {
-		dc.check(ctx)
+		dc.Check(ctx)
 		if dc.config.SlackTest {
 			time.Sleep(10 * time.Second) // 10 seconds
 		} else {
@@ -93,7 +93,7 @@ func (dc *DeploymentChecker) Run(ctx context.Context) {
 }
 
 // check all applications in list
-func (dc *DeploymentChecker) check(ctx context.Context) {
+func (dc *DeploymentChecker) Check(ctx context.Context) {
 	for i := range *dc.allAppStates {
 		app := &(*dc.allAppStates)[i]
 

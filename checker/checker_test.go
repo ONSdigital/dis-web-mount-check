@@ -1,9 +1,11 @@
-package checker
+package checker_test
 
 import (
 	"context"
 	"testing"
 
+	"github.com/ONSdigital/dis-web-mount-check/checker"
+	"github.com/ONSdigital/dis-web-mount-check/checker/mock"
 	"github.com/ONSdigital/dis-web-mount-check/config"
 	"github.com/ONSdigital/dis-web-mount-check/deployment"
 	"github.com/smartystreets/goconvey/convey"
@@ -19,19 +21,19 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 		}
 
 		// Initialise once so they're never nil
-		mockDep := &DeploymentStateGetterMock{}
-		mockNotifier := &SlackNotifierMock{}
-		dc := New(cfg, mockDep, mockNotifier)
+		mockDep := &mock.DeploymentStateGetterMock{}
+		mockNotifier := &mock.SlackNotifierMock{}
+		dc := checker.New(cfg, mockDep, mockNotifier)
 
 		convey.Reset(func() { // called after the first Convey() below
-			mockDep := &DeploymentStateGetterMock{}
-			mockNotifier := &SlackNotifierMock{}
-			dc = New(cfg, mockDep, mockNotifier)
+			mockDep := &mock.DeploymentStateGetterMock{}
+			mockNotifier := &mock.SlackNotifierMock{}
+			dc = checker.New(cfg, mockDep, mockNotifier)
 		})
 
 		callCheck := func(times int) {
 			for i := 0; i < times; i++ {
-				dc.check(ctx)
+				dc.Check(ctx)
 			}
 		}
 
@@ -40,7 +42,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 				return deployment.DeploymentOK, nil
 			}
 
-			callCheck(EffectiveFilterThreshold - 1)
+			callCheck(checker.EffectiveFilterThreshold - 1)
 
 			convey.So(len(mockNotifier.NotifyCalls()), convey.ShouldEqual, 0)
 		})
@@ -50,7 +52,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 				return deployment.DeploymentOK, nil
 			}
 
-			callCheck(EffectiveFilterThreshold)
+			callCheck(checker.EffectiveFilterThreshold)
 
 			convey.So(len(mockNotifier.NotifyCalls()), convey.ShouldEqual, 1)
 			convey.So(mockNotifier.NotifyCalls()[0].State, convey.ShouldBeTrue)
@@ -61,7 +63,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 				return deployment.DeploymentNoAllocations, nil
 			}
 
-			callCheck(EffectiveFilterThreshold)
+			callCheck(checker.EffectiveFilterThreshold)
 
 			convey.So(len(mockNotifier.NotifyCalls()), convey.ShouldEqual, 1)
 			convey.So(mockNotifier.NotifyCalls()[0].State, convey.ShouldBeFalse)
@@ -72,7 +74,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 				return deployment.DeploymentNomadProblem, nil
 			}
 
-			callCheck(EffectiveFilterThreshold)
+			callCheck(checker.EffectiveFilterThreshold)
 
 			convey.So(len(mockNotifier.NotifyCalls()), convey.ShouldEqual, 1)
 			convey.So(mockNotifier.NotifyCalls()[0].State, convey.ShouldBeFalse)
@@ -82,17 +84,17 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 			call := 0
 			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				call++
-				if call <= EffectiveFilterThreshold {
+				if call <= checker.EffectiveFilterThreshold {
 					return deployment.DeploymentOK, nil
 				}
 				return deployment.DeploymentNoAllocations, nil
 			}
 
 			// first -> OK latch
-			callCheck(EffectiveFilterThreshold)
+			callCheck(checker.EffectiveFilterThreshold)
 
 			// next -> FAIL latch
-			callCheck(EffectiveFilterThreshold)
+			callCheck(checker.EffectiveFilterThreshold)
 
 			convey.So(len(mockNotifier.NotifyCalls()), convey.ShouldEqual, 2)
 			convey.So(mockNotifier.NotifyCalls()[0].State, convey.ShouldBeTrue)  // OK
@@ -104,10 +106,10 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentOK, nil
 			}
-			callCheck(EffectiveFilterThreshold) // fills the state machine with OK
+			callCheck(checker.EffectiveFilterThreshold) // fills the state machine with OK
 
 			// Clear any Slack notifications triggered by the initial OK state
-			mockNotifier := &SlackNotifierMock{}
+			mockNotifier := &mock.SlackNotifierMock{}
 
 			// Step 2: Now simulate DeploymentIncomplete
 			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
