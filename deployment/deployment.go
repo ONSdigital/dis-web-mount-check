@@ -64,17 +64,18 @@ const (
 var testCount int
 
 // deploymentState checks spread of app (derived from dp-deployer - successCheckByAllocations() )
-func (d *Deployment) DeploymentState(ctx context.Context, jobID string) (DeploymentState, error) {
+func (d *Deployment) DeploymentState(ctx context.Context, jobID string, sequenceCount int) (DeploymentState, error) {
 	if d.slackTest {
+		// this section is for exercising and observing slack messages working
 		testCount++
-		if testCount <= 60 {
+		if testCount <= 6*sequenceCount {
 			fmt.Printf("test count: %d\n", testCount)
 		}
-		if testCount <= 12 {
-			// Wait till 3 checks have resulted in reporting apps OK,
+		if testCount <= sequenceCount {
+			// Wait till enough filterng checks have resulted in reporting apps OK,
 			return DeploymentOK, nil
 		}
-		if testCount > 12 && testCount <= 40 {
+		if testCount > sequenceCount && testCount <= (4*sequenceCount) {
 			// then cause report of a fail after enough fail samples have been counted,
 			return DeploymentNoAllocations, nil
 		}

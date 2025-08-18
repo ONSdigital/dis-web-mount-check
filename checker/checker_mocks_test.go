@@ -20,7 +20,7 @@ var _ DeploymentStateGetter = &DeploymentStateGetterMock{}
 //
 //		// make and configure a mocked DeploymentStateGetter
 //		mockedDeploymentStateGetter := &DeploymentStateGetterMock{
-//			DeploymentStateFunc: func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+//			DeploymentStateFunc: func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 //				panic("mock out the DeploymentState method")
 //			},
 //		}
@@ -31,7 +31,7 @@ var _ DeploymentStateGetter = &DeploymentStateGetterMock{}
 //	}
 type DeploymentStateGetterMock struct {
 	// DeploymentStateFunc mocks the DeploymentState method.
-	DeploymentStateFunc func(ctx context.Context, jobID string) (deployment.DeploymentState, error)
+	DeploymentStateFunc func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -41,19 +41,23 @@ type DeploymentStateGetterMock struct {
 			Ctx context.Context
 			// JobID is the jobID argument value.
 			JobID string
+			// SequenceCount is the sequenceCount argument value.
+			SequenceCount int
 		}
 	}
 	lockDeploymentState sync.RWMutex
 }
 
 // DeploymentState calls DeploymentStateFunc.
-func (mock *DeploymentStateGetterMock) DeploymentState(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+func (mock *DeploymentStateGetterMock) DeploymentState(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 	callInfo := struct {
-		Ctx   context.Context
-		JobID string
+		Ctx           context.Context
+		JobID         string
+		SequenceCount int
 	}{
-		Ctx:   ctx,
-		JobID: jobID,
+		Ctx:           ctx,
+		JobID:         jobID,
+		SequenceCount: sequenceCount,
 	}
 	mock.lockDeploymentState.Lock()
 	mock.calls.DeploymentState = append(mock.calls.DeploymentState, callInfo)
@@ -65,7 +69,7 @@ func (mock *DeploymentStateGetterMock) DeploymentState(ctx context.Context, jobI
 		)
 		return deploymentStateOut, errOut
 	}
-	return mock.DeploymentStateFunc(ctx, jobID)
+	return mock.DeploymentStateFunc(ctx, jobID, sequenceCount)
 }
 
 // DeploymentStateCalls gets all the calls that were made to DeploymentState.
@@ -73,12 +77,14 @@ func (mock *DeploymentStateGetterMock) DeploymentState(ctx context.Context, jobI
 //
 //	len(mockedDeploymentStateGetter.DeploymentStateCalls())
 func (mock *DeploymentStateGetterMock) DeploymentStateCalls() []struct {
-	Ctx   context.Context
-	JobID string
+	Ctx           context.Context
+	JobID         string
+	SequenceCount int
 } {
 	var calls []struct {
-		Ctx   context.Context
-		JobID string
+		Ctx           context.Context
+		JobID         string
+		SequenceCount int
 	}
 	mock.lockDeploymentState.RLock()
 	calls = mock.calls.DeploymentState

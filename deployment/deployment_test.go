@@ -20,7 +20,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return errors.New("some client error")
 			}
 
-			state, err := d.DeploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldNotBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentNomadProblem)
 		})
@@ -32,7 +32,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.DeploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentNoAllocations)
 		})
@@ -51,7 +51,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.DeploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentLessThanTwoAllocations)
 		})
@@ -76,7 +76,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.DeploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentNotSpreadOverTwoBoxes)
 		})
@@ -101,7 +101,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.DeploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentOK)
 		})
@@ -120,7 +120,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.DeploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentIncomplete)
 		})

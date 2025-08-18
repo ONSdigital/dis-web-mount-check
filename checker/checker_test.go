@@ -36,7 +36,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 		}
 
 		convey.Convey("When the deploymentState returns the same OK state fewer than threshold times, no Slack notification is sent", func() {
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentOK, nil
 			}
 
@@ -46,7 +46,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 		})
 
 		convey.Convey("When the deploymentState returns OK enough times, Slack is notified with state=true", func() {
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentOK, nil
 			}
 
@@ -57,7 +57,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 		})
 
 		convey.Convey("When the deploymentState returns a failing state enough times, Slack is notified with state=false", func() {
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentNoAllocations, nil
 			}
 
@@ -68,7 +68,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 		})
 
 		convey.Convey("When the deploymentState returns a NomadProblem enough times, Slack is notified with state=false", func() {
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentNomadProblem, nil
 			}
 
@@ -80,7 +80,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 
 		convey.Convey("When state transitions from OK -> FAIL after enough samples, both notifications are sent in order", func() {
 			call := 0
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				call++
 				if call <= EffectiveFilterThreshold {
 					return deployment.DeploymentOK, nil
@@ -101,7 +101,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 
 		convey.Convey("If deploymentState returns DeploymentIncomplete, no Slack notification is sent", func() {
 			// Step 1: Put the system into OK state using the normal path
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentOK, nil
 			}
 			callCheck(EffectiveFilterThreshold) // fills the state machine with OK
@@ -110,7 +110,7 @@ func TestDeploymentChecker_check_BDD(t *testing.T) {
 			mockNotifier := &SlackNotifierMock{}
 
 			// Step 2: Now simulate DeploymentIncomplete
-			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string) (deployment.DeploymentState, error) {
+			mockDep.DeploymentStateFunc = func(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error) {
 				return deployment.DeploymentIncomplete, nil
 			}
 

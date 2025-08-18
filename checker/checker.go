@@ -29,7 +29,7 @@ func (RealSlackNotifier) Notify(ctx context.Context, cfg *config.Config, result 
 
 // DeploymentStateGetter is an interface abstraction for deployment.Deployment.
 type DeploymentStateGetter interface {
-	DeploymentState(ctx context.Context, jobID string) (deployment.DeploymentState, error)
+	DeploymentState(ctx context.Context, jobID string, sequenceCount int) (deployment.DeploymentState, error)
 }
 
 // EffectiveState - iota enum of reported states
@@ -97,7 +97,7 @@ func (dc *DeploymentChecker) check(ctx context.Context) {
 	for i := range *dc.allAppStates {
 		app := &(*dc.allAppStates)[i]
 
-		newDeploymentState, err := dc.deployment.DeploymentState(ctx, app.appName)
+		newDeploymentState, err := dc.deployment.DeploymentState(ctx, app.appName, EffectiveFilterThreshold*len(dc.config.AppsToCheck))
 		if err != nil {
 			log.Error(ctx, "check(), DeploymentState() error for: "+app.appName, err)
 			continue
