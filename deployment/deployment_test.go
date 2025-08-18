@@ -1,4 +1,4 @@
-package main
+package deployment
 
 import (
 	"context"
@@ -13,14 +13,14 @@ import (
 func TestDeployment_deploymentState_BDD(t *testing.T) {
 	convey.Convey("Given a Deployment (slackTest=false)", t, func() {
 		ctx := context.Background()
-		d := &Deployment{slackTest: false}
+		d := &Deployment{notifierTest: false}
 
 		convey.Convey("When get returns an error, DeploymentNomadProblem is returned", func() {
 			d.getFunc = func(ctx context.Context, url string, v interface{}) error {
 				return errors.New("some client error")
 			}
 
-			state, err := d.deploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldNotBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentNomadProblem)
 		})
@@ -32,7 +32,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.deploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentNoAllocations)
 		})
@@ -51,7 +51,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.deploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentLessThanTwoAllocations)
 		})
@@ -76,7 +76,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.deploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentNotSpreadOverTwoBoxes)
 		})
@@ -101,7 +101,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.deploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentOK)
 		})
@@ -120,7 +120,7 @@ func TestDeployment_deploymentState_BDD(t *testing.T) {
 				return nil
 			}
 
-			state, err := d.deploymentState(ctx, "job1")
+			state, err := d.DeploymentState(ctx, "job1", 1)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(state, convey.ShouldEqual, DeploymentIncomplete)
 		})
