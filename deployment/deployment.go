@@ -22,10 +22,10 @@ const allocationsURL = "%s/v1/job/%s/allocations"
 
 // Deployment represents a deployment.
 type Deployment struct {
-	nomadClient *nomad.Client
-	endpoint    string
-	token       string
-	slackTest   bool
+	nomadClient  *nomad.Client
+	endpoint     string
+	token        string
+	notifierTest bool
 
 	// getFunc is optional, used by tests to override network calls.
 	// If nil, the normal get() implementation is used.
@@ -35,10 +35,10 @@ type Deployment struct {
 // New returns a new deployment.
 func New(cfg *config.Config, nomadClient *nomad.Client) *Deployment {
 	return &Deployment{
-		nomadClient: nomadClient,
-		endpoint:    cfg.NomadEndpoint,
-		token:       cfg.NomadToken,
-		slackTest:   cfg.SlackTest,
+		nomadClient:  nomadClient,
+		endpoint:     cfg.NomadEndpoint,
+		token:        cfg.NomadToken,
+		notifierTest: cfg.SlackTest,
 	}
 }
 
@@ -65,8 +65,8 @@ var testCount int
 
 // deploymentState checks spread of app (derived from dp-deployer - successCheckByAllocations() )
 func (d *Deployment) DeploymentState(ctx context.Context, jobID string, sequenceCount int) (DeploymentState, error) {
-	if d.slackTest {
-		// this section is for exercising and observing slack messages working
+	if d.notifierTest {
+		// this section is for exercising and observing notifier messages working
 		testCount++
 		if testCount <= 6*sequenceCount {
 			fmt.Printf("test count: %d\n", testCount)

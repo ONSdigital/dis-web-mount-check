@@ -13,7 +13,7 @@ import (
 func TestDeployment_deploymentState_BDD(t *testing.T) {
 	convey.Convey("Given a Deployment (slackTest=false)", t, func() {
 		ctx := context.Background()
-		d := &Deployment{slackTest: false}
+		d := &Deployment{notifierTest: false}
 
 		convey.Convey("When get returns an error, DeploymentNomadProblem is returned", func() {
 			d.getFunc = func(ctx context.Context, url string, v interface{}) error {
