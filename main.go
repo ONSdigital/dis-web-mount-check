@@ -36,7 +36,7 @@ func main() {
 
 	cfg, err := config.Get()
 	if err != nil {
-		log.Fatal(ctx, "Failed to initialise config 2", err)
+		log.Fatal(ctx, "Failed to initialise config", err)
 		os.Exit(1)
 	}
 
