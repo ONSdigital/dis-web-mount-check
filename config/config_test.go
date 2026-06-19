@@ -30,7 +30,7 @@ func TestSpec(t *testing.T) {
 				So(cfg.AppsToCheck, ShouldEqual, []string{"babbage", "zebedee-reader", "the-train", "elasticsearch"})
 				So(cfg.SlackEnabled, ShouldEqual, false)
 				So(cfg.SlackTest, ShouldEqual, false)
-				So(cfg.SlackAPIToken, ShouldEqual, "get from env")
+				So(cfg.SlackAPIToken, ShouldEqual, "")
 				So(cfg.SlackUserName, ShouldEqual, "Spread Check")
 				So(cfg.SlackAlarmChannel, ShouldEqual, "#sandbox-alarm")
 				So(cfg.SlackAlarmEmoji, ShouldEqual, ":x:")

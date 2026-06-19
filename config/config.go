@@ -47,7 +47,7 @@ func Get() (*Config, error) {
 		AppsToCheck:                []string{"babbage", "zebedee-reader", "the-train", "elasticsearch"},
 		SlackEnabled:               false,
 		SlackTest:                  false,
-		SlackAPIToken:              "get from env",
+		SlackAPIToken:              "", // is retrieved from env
 		SlackUserName:              "Spread Check",
 		SlackAlarmChannel:          "#sandbox-alarm",
 		SlackAlarmEmoji:            ":x:",                // a red cross
