@@ -7,5 +7,4 @@ package main
 
 import (
 	_ "github.com/hashicorp/go-getter"
-	_ "golang.org/x/image"
 )

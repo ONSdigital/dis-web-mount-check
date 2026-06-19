@@ -1,6 +1,6 @@
 module github.com/ONSdigital/dis-web-mount-check
 
-go 1.24.5
+go 1.26.0
 
 require (
 	github.com/ONSdigital/dp-healthcheck v1.6.4
@@ -136,7 +136,6 @@ require (
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
-	golang.org/x/image v0.30.0 // indirect
 	golang.org/x/mod v0.26.0 // indirect
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect

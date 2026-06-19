@@ -75,10 +75,16 @@ func New(cfg *config.Config, d DeploymentStateGetter, notifier Notifier) *Deploy
 func (dc *DeploymentChecker) Run(ctx context.Context) {
 	for {
 		dc.Check(ctx)
+
+		delay := 60 * time.Second
 		if dc.config.SlackTest {
-			time.Sleep(10 * time.Second) // 10 seconds
-		} else {
-			time.Sleep(60 * time.Second) // 60 seconds
+			delay = 10 * time.Second
+		}
+
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(delay):
 		}
 	}
 }
